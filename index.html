@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Council Letters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FFF8F3;
+    --cream-deep: #FBF0E6;
+    --ink: #2B2438;
+    --ink-soft: #574C68;
+    --rose: #E8A2A0;
+    --rose-deep: #D98785;
+    --gold: #F4C77B;
+    --gold-deep: #E0AD52;
+    --lavender: #9B8AA6;
+    --line: #EAD9CE;
+    --shadow: rgba(43, 36, 56, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    overscroll-behavior: none;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(180deg, #EDE0E8 0%, #F6E9DC 100%);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 16px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* ---------- Phone frame ---------- */
+  .phone {
+    width: 100%;
+    max-width: 400px;
+    height: 100vh;
+    max-height: 860px;
+    background: var(--cream);
+    border-radius: 36px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 30px 60px -20px rgba(43,36,56,0.35), 0 0 0 8px #1f1a29;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- Header / ribbon ---------- */
+  .ribbon {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
+    padding: 18px 20px 16px;
+    position: relative;
+    flex-shrink: 0;
+    z-index: 5;
+  }
+
+  .ribbon::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: inherit;
+    clip-path: polygon(0 0, 100% 0, 100% 40%, 95% 100%, 90% 40%, 85% 100%, 80% 40%, 75% 100%, 70% 40%, 65% 100%, 60% 40%, 55% 100%, 50% 40%, 45% 100%, 40% 40%, 35% 100%, 30% 40%, 25% 100%, 20% 40%, 15% 100%, 10% 40%, 5% 100%, 0 40%);
+  }
+
+  .ribbon-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .seal {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--gold-deep);
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 2px var(--gold-deep);
+    position: relative;
+  }
+
+  .seal-pulse {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid var(--cream);
+    opacity: 0;
+  }
+  .seal-pulse.active {
+    animation: sealPulse 1.4s ease-out infinite;
+  }
+  @keyframes sealPulse {
+    0% { opacity: 0.9; transform: scale(0.9); }
+    100% { opacity: 0; transform: scale(1.5); }
+  }
+
+  .ribbon-info { flex: 1; min-width: 0; }
+
+  .ribbon-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 19px;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+
+  .ribbon-role {
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 500;
+    margin-top: 2px;
+    letter-spacing: 0.02em;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #7BAE7F;
+    margin-right: 5px;
+  }
+
+  /* ---------- Tabs ---------- */
+  .tabs {
+    display: flex;
+    background: var(--cream-deep);
+    border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 11px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--lavender);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+  .tab.active {
+    color: var(--rose-deep);
+    border-color: var(--rose-deep);
+  }
+
+  /* ---------- Screens ---------- */
+  .screen {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .screen.active { display: flex; }
+
+  /* ---------- Chat thread ---------- */
+  .thread {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .thread::-webkit-scrollbar { width: 0; }
+
+  .day-marker {
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--lavender);
+    margin: 6px 0 10px;
+  }
+
+  .msg-row {
+    display: flex;
+    flex-direction: column;
+    max-width: 78%;
+    animation: msgIn 0.35s ease both;
+  }
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .msg-row.them { align-self: flex-start; align-items: flex-start; }
+  .msg-row.me { align-self: flex-end; align-items: flex-end; }
+
+  .bubble {
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14.5px;
+    line-height: 1.45;
+    word-wrap: break-word;
+  }
+  .msg-row.them .bubble {
+    background: var(--rose);
+    color: #3B2222;
+    border-bottom-left-radius: 4px;
+  }
+  .msg-row.me .bubble {
+    background: var(--ink);
+    color: var(--cream);
+    border-bottom-right-radius: 4px;
+  }
+  .msg-time {
+    font-size: 10px;
+    color: var(--lavender);
+    margin-top: 3px;
+    padding: 0 4px;
+  }
+
+  .typing-row {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--rose);
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    width: fit-content;
+  }
+  .typing-seal {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1.5px #3B2222;
+    position: relative;
+  }
+  .typing-seal::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: #3B2222;
+    animation: sealBeat 0.9s ease-in-out infinite;
+  }
+  @keyframes sealBeat {
+    0%, 100% { transform: scale(0.6); opacity: 0.5; }
+    50% { transform: scale(1); opacity: 1; }
+  }
+  .typing-label {
+    font-size: 11px;
+    color: #3B2222;
+    font-weight: 600;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+  }
+
+  /* ---------- Reaction bar (replaces free text input, Mystic-style) ---------- */
+  .reply-zone {
+    border-top: 1px solid var(--line);
+    background: var(--cream-deep);
+    padding: 12px 14px 16px;
+    flex-shrink: 0;
+  }
+  .reply-hint {
+    font-size: 11px;
+    color: var(--lavender);
+    text-align: center;
+    margin-bottom: 8px;
+    font-style: italic;
+    font-family: 'Fraunces', serif;
+  }
+  .reply-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .reply-btn {
+    background: var(--cream);
+    border: 1.5px solid var(--rose);
+    color: var(--ink);
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .reply-btn:active { transform: scale(0.97); background: var(--rose); }
+  .reply-locked {
+    text-align: center;
+    color: var(--lavender);
+    font-size: 12px;
+    padding: 10px 0;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+  }
+
+  /* ---------- Story scene ---------- */
+  .story {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, #F3E4DE 0%, var(--cream) 55%);
+    position: relative;
+    overflow: hidden;
+  }
+  .story-portrait-zone {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 30px 20px 0;
+    position: relative;
+  }
+  .portrait {
+    width: 168px;
+    height: 168px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--rose) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 52px;
+    color: var(--cream);
+    box-shadow: 0 12px 30px -8px rgba(43,36,56,0.3);
+    transition: transform 0.4s ease, filter 0.4s ease;
+    border: 5px solid var(--cream);
+  }
+  .portrait.shaken { animation: shake 0.4s ease; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px) rotate(-1deg); }
+    75% { transform: translateX(6px) rotate(1deg); }
+  }
+  .portrait.soft { filter: saturate(0.75) brightness(1.02); }
+
+  .story-box {
+    background: var(--cream);
+    border-top: 1px solid var(--line);
+    border-radius: 22px 22px 0 0;
+    padding: 18px 20px 22px;
+    box-shadow: 0 -8px 24px -12px rgba(43,36,56,0.15);
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .story-speaker {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--rose-deep);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+  .story-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+    min-height: 60px;
+  }
+  .story-text.narration {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .story-tap {
+    align-self: flex-end;
+    font-size: 11px;
+    color: var(--lavender);
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .tap-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--lavender);
+    animation: tapBlink 1.2s ease-in-out infinite;
+  }
+  @keyframes tapBlink {
+    0%, 100% { opacity: 0.3; } 50% { opacity: 1; }
+  }
+
+  .story-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .choice-btn {
+    background: var(--cream-deep);
+    border: 1.5px solid var(--gold-deep);
+    color: var(--ink);
+    border-radius: 14px;
+    padding: 11px 14px;
+    font-size: 13.5px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .choice-btn:active { transform: scale(0.97); background: var(--gold); }
+
+  .story-clickzone {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    cursor: pointer;
+  }
+
+  /* ---------- Intro / locked state ---------- */
+  .intro-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 30px;
+    gap: 18px;
+  }
+  .intro-seal {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--rose) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 30px;
+    color: var(--cream);
+    box-shadow: 0 10px 24px -8px rgba(43,36,56,0.3);
+  }
+  .intro-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--ink);
+  }
+  .intro-sub {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    max-width: 280px;
+  }
+  .intro-btn {
+    margin-top: 8px;
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 24px;
+    padding: 13px 32px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: transform 0.15s, opacity 0.15s;
+  }
+  .intro-btn:active { transform: scale(0.96); }
+  .intro-btn:disabled { opacity: 0.4; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="ribbon">
+    <div class="ribbon-top">
+      <div class="seal">G<div class="seal-pulse" id="sealPulse"></div></div>
+      <div class="ribbon-info">
+        <div class="ribbon-name">Gunter Voss</div>
+        <div class="ribbon-role"><span class="status-dot"></span>Vice President &middot; Student Council</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="chat">Messages</div>
+    <div class="tab" data-tab="story">Council Room</div>
+  </div>
+
+  <!-- CHAT SCREEN -->
+  <div class="screen active" id="screen-chat">
+    <div class="thread" id="thread">
+      <div class="day-marker">Tuesday &middot; after school</div>
+    </div>
+    <div class="reply-zone" id="replyZone">
+      <div class="reply-hint">waiting on a reply...</div>
+      <div class="reply-locked">Open the chat to begin</div>
+    </div>
+  </div>
+
+  <!-- STORY SCREEN -->
+  <div class="screen" id="screen-story">
+    <div class="intro-screen" id="storyIntro">
+      <div class="intro-seal">G</div>
+      <div class="intro-title">The Council Room</div>
+      <div class="intro-sub">It's quiet after hours. Gunter is still here, finishing paperwork he didn't need to finish tonight.</div>
+      <button class="intro-btn" id="enterStoryBtn">Step inside</button>
+    </div>
+    <div class="story" id="storyView" style="display:none;">
+      <div class="story-clickzone" id="storyClick"></div>
+      <div class="story-portrait-zone">
+        <div class="portrait" id="portrait">G</div>
+      </div>
+      <div class="story-box">
+        <div>
+          <div class="story-speaker" id="storySpeaker">Gunter</div>
+          <div class="story-text" id="storyText"></div>
+        </div>
+        <div class="story-tap" id="storyTap"><span class="tap-dot"></span>tap to continue</div>
+        <div class="story-choices" id="storyChoices" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  // ---------- Tab switching ----------
+  const tabs = document.querySelectorAll('.tab');
+  const screens = {
+    chat: document.getElementById('screen-chat'),
+    story: document.getElementById('screen-story'),
+  };
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[t.dataset.tab].classList.add('active');
+  }));
+
+  // ===================================================================
+  // CHAT ENGINE
+  // ===================================================================
+  const thread = document.getElementById('thread');
+  const replyZone = document.getElementById('replyZone');
+  const sealPulse = document.getElementById('sealPulse');
+
+  function scrollBottom(){
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  function addMessage(sender, text, opts){
+    opts = opts || {};
+    const row = document.createElement('div');
+    row.className = 'msg-row ' + (sender === 'them' ? 'them' : 'me');
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    const time = document.createElement('div');
+    time.className = 'msg-time';
+    const now = new Date();
+    time.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    row.appendChild(time);
+    thread.appendChild(row);
+    scrollBottom();
+  }
+
+  function showTyping(){
+    const row = document.createElement('div');
+    row.className = 'typing-row';
+    row.id = 'typingRow';
+    row.innerHTML = '<div class="typing-seal"></div><div class="typing-label">sealing a reply</div>';
+    thread.appendChild(row);
+    scrollBottom();
+  }
+  function hideTyping(){
+    const r = document.getElementById('typingRow');
+    if (r) r.remove();
+  }
+
+  function setReplyLocked(text){
+    replyZone.innerHTML = `<div class="reply-hint">${text || 'waiting on a reply...'}</div><div class="reply-locked">Gunter is composing...</div>`;
+  }
+
+  function setReplyOptions(hint, options, onPick){
+    let html = `<div class="reply-hint">${hint}</div><div class="reply-options">`;
+    options.forEach((opt, i) => {
+      html += `<button class="reply-btn" data-i="${i}">${opt.label}</button>`;
+    });
+    html += '</div>';
+    replyZone.innerHTML = html;
+    replyZone.querySelectorAll('.reply-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.i, 10);
+        replyZone.querySelectorAll('.reply-btn').forEach(b => b.disabled = true);
+        onPick(options[i]);
+      });
+    });
+  }
+
+  // Simple scripted sequence: Gunter messages, with one reply choice partway through.
+  const chatScript = [
+    { from: 'them', text: "ok, council minutes are filed. you survived another assembly" },
+    { from: 'them', text: "did you see christian's speech though? very Presidential of him" },
+    { wait: 'choice', hint: 'reply to gunter', options: [
+        { label: "Honestly? I was watching you more.", branch: 'flatter' },
+        { label: "It was fine. Yours was better.", branch: 'compare' },
+        { label: "ha, very presidential indeed", branch: 'neutral' },
+      ]
+    },
+  ];
+
+  const branches = {
+    flatter: [
+      { from: 'them', text: "...oh." },
+      { from: 'them', text: "don't say things like that over text, voss men have weak hearts" },
+      { from: 'them', text: "meet me in the council room before you take that back" },
+    ],
+    compare: [
+      { from: 'them', text: "you're just saying that" },
+      { from: 'them', text: "but i'll take it. say it again in person and I might believe you" },
+      { from: 'them', text: "council room, after school. don't keep the vice president waiting" },
+    ],
+    neutral: [
+      { from: 'them', text: "wow. no follow up compliment for me? cold" },
+      { from: 'them', text: "fine, I'll fish for one in person. council room, later?" },
+    ],
+  };
+
+  let chatIndex = 0;
+
+  function runStep(step){
+    if (!step){
+      finishChatSequence();
+      return;
+    }
+    if (step.wait === 'choice'){
+      setReplyLocked();
+      setTimeout(() => {
+        setReplyOptions(step.hint, step.options, (opt) => {
+          addMessage('me', opt.label);
+          setReplyLocked();
+          setTimeout(() => {
+            const branchSteps = branches[opt.branch];
+            playBranch(branchSteps, 0);
+          }, 500);
+        });
+      }, 200);
+      return;
+    }
+    sealPulse.classList.add('active');
+    setReplyLocked();
+    showTyping();
+    const delay = 900 + Math.random() * 700;
+    setTimeout(() => {
+      hideTyping();
+      sealPulse.classList.remove('active');
+      addMessage(step.from, step.text);
+      chatIndex++;
+      setTimeout(() => runStep(chatScript[chatIndex]), 500);
+    }, delay);
+  }
+
+  function playBranch(steps, i){
+    if (!steps || i >= steps.length){
+      finishChatSequence();
+      return;
+    }
+    sealPulse.classList.add('active');
+    setReplyLocked();
+    showTyping();
+    const delay = 800 + Math.random() * 600;
+    setTimeout(() => {
+      hideTyping();
+      sealPulse.classList.remove('active');
+      addMessage('them', steps[i].text);
+      setTimeout(() => playBranch(steps, i + 1), 500);
+    }, delay);
+  }
+
+  function finishChatSequence(){
+    replyZone.innerHTML = `<div class="reply-hint">conversation paused</div><div class="reply-locked">Head to the Council Room \u2192</div>`;
+  }
+
+  function startChat(){
+    addMessage('them', "hey. you free?");
+    chatIndex = 0;
+    setTimeout(() => runStep(chatScript[0]), 900);
+  }
+
+  setTimeout(startChat, 600);
+
+  // ===================================================================
+  // STORY SCENE ENGINE
+  // ===================================================================
+  const enterBtn = document.getElementById('enterStoryBtn');
+  const storyIntro = document.getElementById('storyIntro');
+  const storyView = document.getElementById('storyView');
+  const storyClick = document.getElementById('storyClick');
+  const storySpeaker = document.getElementById('storySpeaker');
+  const storyText = document.getElementById('storyText');
+  const storyTap = document.getElementById('storyTap');
+  const storyChoices = document.getElementById('storyChoices');
+  const portrait = document.getElementById('portrait');
+
+  // Story script: array of nodes. Each node: speaker, text, narration(bool), choices(optional), onEnter(optional)
+  const storyScript = [
+    { narration: true, text: "The council room smells like dry-erase markers and the last of the afternoon sun." },
+    { speaker: 'Gunter', text: "You actually came. I half expected you to leave me on read." },
+    { speaker: 'Gunter', text: "Christian usually runs late on Tuesdays \u2014 budget review with the treasurer. So it's just us, for once." },
+    { narration: true, text: "He says it lightly. Like it doesn't mean anything. It clearly means something." },
+    { speaker: 'Gunter', text: "Can I ask you something, and you have to actually answer, not just laugh it off like you do." },
+    {
+      speaker: 'Gunter',
+      text: "If Christian asked you the same thing I'm about to ask \u2014 would your answer be different?",
+      choices: [
+        { label: "No. It wouldn't.", next: 'reassure' },
+        { label: "...I don't know yet.", next: 'honest' },
+      ]
+    },
+  ];
+
+  const storyBranches = {
+    reassure: [
+      { onEnter: () => portrait.classList.add('soft'), speaker: 'Gunter', text: "...okay." },
+      { speaker: 'Gunter', text: "Say it like you mean it and I'll stop asking. I promise." },
+      { narration: true, text: "You do. And for once, the vice president of the student council has nothing composed to say back." },
+      { speaker: 'Gunter', text: "Good. Hold onto that thought. I have a council room to lock up and a very stupid smile to hide from Christian." },
+      { narration: true, text: "End of preview \u2014 Gunter's route continues from here." },
+    ],
+    honest: [
+      { onEnter: () => portrait.classList.add('shaken'), speaker: 'Gunter', text: "Right. Of course." },
+      { speaker: 'Gunter', text: "Sorry \u2014 that was unfair of me to ask like that. Forget I said anything." },
+      { narration: true, text: "He laughs it off the way he always does, already reaching for the binder of minutes. But his ears are red." },
+      { speaker: 'Gunter', text: "Take your time. I'm not going anywhere. ...Probably annoyingly so." },
+      { narration: true, text: "End of preview \u2014 Gunter's route continues from here." },
+    ],
+  };
+
+  let storyQueue = storyScript;
+  let storyPos = 0;
+
+  function renderStoryNode(node){
+    if (!node){
+      storySpeaker.style.display = 'none';
+      storyText.textContent = "\u2014 fin \u2014";
+      storyText.classList.add('narration');
+      storyTap.style.display = 'none';
+      storyChoices.style.display = 'none';
+      storyClick.style.display = 'none';
+      return;
+    }
+    if (node.onEnter) node.onEnter();
+
+    if (node.narration){
+      storySpeaker.style.display = 'none';
+      storyText.classList.add('narration');
+    } else {
+      storySpeaker.style.display = 'block';
+      storySpeaker.textContent = node.speaker;
+      storyText.classList.remove('narration');
+    }
+    storyText.textContent = node.text;
+
+    if (node.choices){
+      storyTap.style.display = 'none';
+      storyClick.style.display = 'none';
+      storyChoices.style.display = 'flex';
+      storyChoices.innerHTML = '';
+      node.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice.label;
+        btn.addEventListener('click', () => {
+          storyQueue = storyBranches[choice.next];
+          storyPos = 0;
+          renderStoryNode(storyQueue[storyPos]);
+        });
+        storyChoices.appendChild(btn);
+      });
+    } else {
+      storyChoices.style.display = 'none';
+      storyTap.style.display = 'flex';
+      storyClick.style.display = 'block';
+    }
+  }
+
+  function advanceStory(){
+    portrait.classList.remove('shaken');
+    storyPos++;
+    if (storyPos < storyQueue.length){
+      renderStoryNode(storyQueue[storyPos]);
+    } else {
+      renderStoryNode(null);
+    }
+  }
+
+  storyClick.addEventListener('click', advanceStory);
+
+  enterBtn.addEventListener('click', () => {
+    storyIntro.style.display = 'none';
+    storyView.style.display = 'flex';
+    storyQueue = storyScript;
+    storyPos = 0;
+    renderStoryNode(storyQueue[0]);
+  });
+
+})();
+</script>
+
+</body>
+</html>

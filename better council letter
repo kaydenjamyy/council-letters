@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Council Letters</title>
+
+<style>
+
+:root{
+--cream:#FFF8F3;
+--ink:#2B2438;
+--rose:#E8A2A0;
+--gold:#F4C77B;
+}
+
+body{
+margin:0;
+background:linear-gradient(#EDE0E8,#F6E9DC);
+font-family:sans-serif;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.phone{
+width:400px;
+height:850px;
+background:var(--cream);
+border-radius:30px;
+overflow:hidden;
+display:flex;
+flex-direction:column;
+box-shadow:0 0 30px rgba(0,0,0,.2);
+}
+
+.header{
+padding:20px;
+background:var(--gold);
+font-size:24px;
+font-weight:bold;
+}
+
+#dayDisplay{
+padding:10px;
+color:#888;
+}
+
+.affection-bar{
+height:10px;
+background:#ddd;
+margin:0 20px;
+border-radius:10px;
+overflow:hidden;
+}
+
+#affectionFill{
+height:100%;
+width:0%;
+background:linear-gradient(to right,var(--rose),var(--gold));
+transition:.3s;
+}
+
+.thread{
+flex:1;
+overflow-y:auto;
+padding:15px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.msg{
+padding:12px;
+border-radius:18px;
+max-width:75%;
+}
+
+.them{
+background:var(--rose);
+align-self:flex-start;
+}
+
+.me{
+background:var(--ink);
+color:white;
+align-self:flex-end;
+}
+
+#choices{
+padding:15px;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+button{
+padding:12px;
+border:none;
+border-radius:15px;
+cursor:pointer;
+}
+
+.choice{
+background:white;
+border:1px solid var(--rose);
+}
+
+#portrait{
+font-size:90px;
+text-align:center;
+padding:20px;
+transition:.3s;
+}
+
+.soft{
+transform:scale(1.05);
+}
+
+.shaken{
+animation:shake .3s;
+}
+
+@keyframes shake{
+25%{transform:translateX(-5px);}
+75%{transform:translateX(5px);}
+}
+
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+<div class="header">
+Gunter Voss
+</div>
+
+<div id="dayDisplay">
+Day 1
+</div>
+
+<div class="affection-bar">
+<div id="affectionFill"></div>
+</div>
+
+<div id="portrait">
+🙂
+</div>
+
+<div class="thread" id="thread"></div>
+
+<div id="choices"></div>
+
+</div>
+
+<script>
+
+let affection = parseInt(localStorage.getItem("affection")) || 0;
+let currentDay = parseInt(localStorage.getItem("day")) || 1;
+
+const thread = document.getElementById("thread");
+const choices = document.getElementById("choices");
+const portrait = document.getElementById("portrait");
+
+function saveGame(){
+localStorage.setItem("affection",affection);
+localStorage.setItem("day",currentDay);
+}
+
+function updateBar(){
+document.getElementById("affectionFill").style.width = affection + "%";
+}
+
+function addMessage(text,type){
+
+const div=document.createElement("div");
+
+div.className="msg "+type;
+
+div.textContent=text;
+
+thread.appendChild(div);
+
+thread.scrollTop=thread.scrollHeight;
+
+}
+
+function setExpression(type){
+
+portrait.classList.remove("soft","shaken");
+
+if(type==="happy"){
+portrait.innerHTML="😊";
+portrait.classList.add("soft");
+}
+
+if(type==="embarrassed"){
+portrait.innerHTML="😳";
+portrait.classList.add("shaken");
+}
+
+if(type==="normal"){
+portrait.innerHTML="🙂";
+}
+
+}
+
+function addAffection(points){
+
+affection+=points;
+
+if(affection>100) affection=100;
+
+updateBar();
+
+saveGame();
+
+}
+
+function showChoices(){
+
+choices.innerHTML="";
+
+const c1=document.createElement("button");
+c1.className="choice";
+c1.innerText="I was watching you.";
+
+c1.onclick=function(){
+
+addMessage("I was watching you.","me");
+
+addAffection(10);
+
+setExpression("embarrassed");
+
+setTimeout(()=>{
+addMessage("...don't say things like that.","them");
+},1000);
+
+};
+
+choices.appendChild(c1);
+
+const c2=document.createElement("button");
+c2.className="choice";
+c2.innerText="Your speech was better.";
+
+c2.onclick=function(){
+
+addMessage("Your speech was better.","me");
+
+addAffection(5);
+
+setExpression("happy");
+
+setTimeout(()=>{
+addMessage("You're just saying that.","them");
+},1000);
+
+};
+
+choices.appendChild(c2);
+
+}
+
+function start(){
+
+document.getElementById("dayDisplay").innerText="Day "+currentDay;
+
+updateBar();
+
+addMessage("Hey. You free?","them");
+
+setTimeout(()=>{
+
+addMessage("Assembly was exhausting.","them");
+
+},1200);
+
+setTimeout(()=>{
+
+addMessage("Did you watch my speech?","them");
+
+showChoices();
+
+},2500);
+
+}
+
+function getEnding(){
+
+if(affection>=80){
+
+alert("TRUE ENDING");
+
+}
+
+else if(affection>=50){
+
+alert("GOOD ENDING");
+
+}
+
+else{
+
+alert("BAD ENDING");
+
+}
+
+}
+
+function nextDay(){
+
+currentDay++;
+
+document.getElementById("dayDisplay").innerText="Day "+currentDay;
+
+saveGame();
+
+}
+
+function restartGame(){
+
+localStorage.clear();
+
+location.reload();
+
+}
+
+if(new Date().getHours()>=19){
+
+document.documentElement.style.setProperty("--cream","#1D1C28");
+document.documentElement.style.setProperty("--ink","#FFF8F3");
+
+}
+
+setTimeout(function(){
+
+if(Notification.permission==="granted"){
+
+new Notification("Message from Gunter");
+
+}
+
+},15000);
+
+if(Notification.permission!=="granted"){
+
+Notification.requestPermission();
+
+}
+
+start();
+
+</script>
+
+</body>
+</html>
